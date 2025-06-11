@@ -1,22 +1,24 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import StoreController from "../../controllers/store-controller";
 
 const App = () => {
-    const [value, setValue] = useState<string>("place!");
-
-    const setValueFromStorage = async (key: string): Promise<void> => {
-        const obj: Object = await chrome.storage.session.get(key);
-        const v = obj[key];
-        setValue(v);
-    };
+    const [tabDomain, setTabDomain] = useState<string>("");
 
     useEffect(() => {
-        setValueFromStorage("testKey");
+        const updateTabDomain = async () => {
+            const url: URL | undefined = await StoreController.getURL();
+            setTabDomain(url?.hostname || "");
+        };
+
+        updateTabDomain();
+
     }, []);
 
     return (
         <div className="main-app">
             <h1>Tube Loader</h1>
-            <p>Hello {value}</p>
+            <p>Hello world!</p>
+            <p>Tab domain: {tabDomain}</p>
         </div>
     );
 }

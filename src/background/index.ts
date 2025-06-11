@@ -1,5 +1,9 @@
-const setStorage = async (key: string) => {
-    await chrome.storage.session.set({ [key]: "world!" });
-};
+import StoreController from "../controllers/store-controller";
 
-setStorage("testKey");
+chrome.tabs.onActivated.addListener(tabInfo => {
+    chrome.tabs.get(tabInfo.tabId, tab => {
+
+        StoreController.setURL(tab.url || "");
+
+    });
+});
