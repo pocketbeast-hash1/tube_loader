@@ -1,30 +1,24 @@
-import { inject, observer } from "mobx-react";
-import { Component, ReactNode } from "react";
-import GlobalStore from "../store/globalStore";
+import { useState, useEffect } from "react";
 
-interface AppProps {
-    globalStore: GlobalStore
+const App = () => {
+    const [value, setValue] = useState<string>("place!");
+
+    const setValueFromStorage = async (key: string): Promise<void> => {
+        const obj: Object = await chrome.storage.session.get(key);
+        const v = obj[key];
+        setValue(v);
+    };
+
+    useEffect(() => {
+        setValueFromStorage("testKey");
+    }, []);
+
+    return (
+        <div className="main-app">
+            <h1>Tube Loader</h1>
+            <p>Hello {value}</p>
+        </div>
+    );
 }
-
-@inject("globalStore")
-@observer
-export default class App extends Component { 
-    
-    private globalStore: GlobalStore;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.globalStore = props.globalStore;
-    }
-
-    render(): ReactNode {
-        return (
-            <div className="main-app">
-                <h1>Tube Loader {this.globalStore.counter.toString()}</h1>
-                <button onClick={() => this.globalStore.counter++}>Increment</button>
-                <button onClick={() => this.globalStore.counter--}>Decrement</button>
-            </div>
-        );
-    }
-
-};
+ 
+export default App;
