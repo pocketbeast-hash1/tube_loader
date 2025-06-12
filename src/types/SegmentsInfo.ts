@@ -32,7 +32,8 @@ export default class SegmentsInfo implements ISegmentsInfo {
             if (
                 line.includes("#EXTM3U") || 
                 line.includes("#EXT-X") || 
-                line.includes("#EXTINF")
+                line.includes("#EXTINF") ||
+                !line
             ) {
                 continue;
             }

@@ -10,6 +10,9 @@ export default class StoreController {
     private static async setValueByKey(key: string, value: any): Promise<void> {
         await chrome.storage.session.set({ [key]: value });
     }
+    public static async clearStore(): Promise<void> {
+        await chrome.storage.session.clear();
+    }
 
 
     public static async getURL(): Promise<URL | undefined> {
@@ -22,6 +25,14 @@ export default class StoreController {
     }
     public static async setURL(newURL: string): Promise<void> {
         await StoreController.setValueByKey("url", newURL);
+    }
+
+
+    public static async getBaseURL(): Promise<string | undefined> {
+        return await StoreController.getValueByKey("baseUrl");
+    }
+    public static async setBaseURL(baseUrl: string): Promise<void> {
+        await StoreController.setValueByKey("baseUrl", baseUrl);
     }
 
 
