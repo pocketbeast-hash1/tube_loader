@@ -1,5 +1,5 @@
 import ISegmentsInfo from "../interfaces/ISegmentsInfo";
-import SegmentsInfo from "../types/SegmentsInfo";
+import SegmentsInfo from "../classes/SegmentsInfo";
 
 export default class StoreController {
     
@@ -9,6 +9,9 @@ export default class StoreController {
     }
     private static async setValueByKey(key: string, value: any): Promise<void> {
         await chrome.storage.session.set({ [key]: value });
+    }
+    private static async deleteValueByKey(key: string): Promise<void> {
+        await chrome.storage.session.remove(key);
     }
     public static async clearStore(): Promise<void> {
         await chrome.storage.session.clear();
@@ -46,6 +49,17 @@ export default class StoreController {
     }
     public static async setSegmentsInfo(info: string): Promise<void> {
         await StoreController.setValueByKey("segmentsInfo", info);
+    }
+
+
+    public static async getWindowRedirect(windowId: number): Promise<string | undefined> {
+        return await StoreController.getValueByKey(`r${windowId}`);
+    }
+    public static async setWindowRedirect(windowId: number, redirectPath: string): Promise<void> {
+        await StoreController.setValueByKey(`r${windowId}`, redirectPath);
+    }
+    public static async deleteWindowRedirect(windowId: number): Promise<void> {
+        await StoreController.deleteValueByKey(`r${windowId}`);
     }
 
 }

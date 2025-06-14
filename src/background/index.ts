@@ -3,11 +3,11 @@
 import RequestsController from "../controllers/requests-controller";
 import StoreController from "../controllers/store-controller";
 import EServices from "../enums/EServices";
-import SegmentsInfoRequest from "../types/abstract/SegmentsInfoRequest";
-import SegmentsInfoRequestRutube from "../types/SegmentsInfoRequestRutube";
+import SegmentsInfoRequest from "../classes/abstract/SegmentsInfoRequest";
+import SegmentsInfoRequestRutube from "../classes/SegmentsInfoRequestRutube";
 
 chrome.tabs.onActivated.addListener(async tabInfo => {
-    await StoreController.clearStore();
+    // await StoreController.clearStore();
     chrome.webRequest.onCompleted.removeListener(listenWebRequests);
     startListeningActiveTab();
 });

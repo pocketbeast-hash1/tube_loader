@@ -6,16 +6,18 @@ module.exports = {
     mode: "development",
     devtool: "cheap-module-source-map",
     target: "web",
+    
     entry: {
         contentScript: "./src/content/index.ts",
         background: "./src/background/index.ts",
-        react: "./src/react/index.tsx",
+        react: "./src/react/index.tsx"
     },
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "[name].js",
         clean: true,
     },
+
     plugins: [
         new HtmlWebpackPlugin({
             template: "./src/index.html"
@@ -25,7 +27,7 @@ module.exports = {
                 from: path.resolve("manifest.json"),
                 to: path.resolve("dist")
             }]
-        }),
+        })
     ],
     module: {
         rules: [{
