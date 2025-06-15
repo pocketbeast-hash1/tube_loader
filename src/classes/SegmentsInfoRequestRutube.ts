@@ -14,6 +14,7 @@ export default class SegmentsInfoRequestRutube extends SegmentsInfoRequest {
 
     public static isValidDomain(domain: string): boolean {
         return (
+            domain.match(/^rutube\.ru$/) !== null ||
             domain.match(/.*[^bl]\.rutube\.ru*/) !== null ||
             domain.match(/.*[^bl]\.rtbcdn\.ru*/) !== null
         );

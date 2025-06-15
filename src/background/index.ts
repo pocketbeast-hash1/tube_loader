@@ -4,10 +4,10 @@ import RequestsController from "../controllers/requests-controller";
 import StoreController from "../controllers/store-controller";
 import EServices from "../enums/EServices";
 import SegmentsInfoRequest from "../classes/abstract/SegmentsInfoRequest";
-import SegmentsInfoRequestRutube from "../classes/SegmentsInfoRequestRutube";
+import * as serviceInitializer from "../controllers/service-initializer";
+import RuntimeMessage from "../types/runtime-message";
 
 chrome.tabs.onActivated.addListener(async tabInfo => {
-    // await StoreController.clearStore();
     chrome.webRequest.onCompleted.removeListener(listenWebRequests);
     startListeningActiveTab();
 });
@@ -35,38 +35,26 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
     if (details.method !== "GET") return;
 
     const url: URL = new URL(details.url);
-    const service: EServices = getService(url.hostname);
+    const service: EServices = serviceInitializer.getService(url.hostname);
     if (service === EServices.Undefined) return;
-    if (!isSegmentsInfoRequest(url)) return;
+    if (!serviceInitializer.isSegmentsInfoRequest(url)) return;
     
     const segmentsInfoRequest: SegmentsInfoRequest | undefined = 
-        getSegmentsInfoRequest(url, service);
+        serviceInitializer.getSegmentsInfoRequest(url, service);
     if (!segmentsInfoRequest) return;
 
+    let msgToClient: RuntimeMessage;
+
     await StoreController.setBaseURL(segmentsInfoRequest.baseUrl);
+
+    msgToClient = { id: "baseUrlUpdate" };
+    chrome.runtime.sendMessage(msgToClient);
 
     const segmentsInfo: string | undefined = await RequestsController.getSegmentsInfo(segmentsInfoRequest);
     if (!segmentsInfo) return;
     await StoreController.setSegmentsInfo(segmentsInfo);
-
-};
-
-const getService = (domain: string): EServices => {
-    if (SegmentsInfoRequestRutube.isValidDomain(domain)) {
-        return EServices.Rutube;
-    }
     
-    return EServices.Undefined;
-};
+    msgToClient = { id: "segmentsInfoUpdate" };
+    chrome.runtime.sendMessage(msgToClient);
 
-const isSegmentsInfoRequest = (url: URL): boolean => {
-    return (
-        SegmentsInfoRequestRutube.isSegmentsInfoRequest(url)
-    );
-};
-
-const getSegmentsInfoRequest = (url: URL, service: EServices): SegmentsInfoRequest | undefined => {
-    if (service === EServices.Rutube) {
-        return new SegmentsInfoRequestRutube(url);
-    };
 };

@@ -1,0 +1,26 @@
+.main-app {
+    width: 300px;
+    height: fit-content;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#tab-domain {
+    height: fit-content;
+    padding: 5px;
+}
+#tab-domain.valid {
+    background-color: rgb(170, 223, 174);
+}
+#tab-domain.not-valid {
+    background-color: rgb(223, 170, 179);
+}
+
+.error-block {
+    height: fit-content;
+    padding: 5px;
+    background-color: rgb(223, 170, 179);
+}

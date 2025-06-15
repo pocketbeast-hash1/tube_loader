@@ -32,25 +32,32 @@ module.exports = {
         })
     ],
     module: {
-        rules: [{
-            test: /\.(ts|tsx)$/,
-            exclude: /node_modules/,
-            use: {
-                loader: "babel-loader",
-                options: {
-                    presets: [
-                        "@babel/preset-env",
-                        ["@babel/preset-react", { 
-                            "runtime": "automatic",
-                            "importSource": "@emotion/react" 
-                        }],
-                        "@babel/preset-typescript"
-                    ]
-                }
-            }
-        }]
+        rules: [
+            {
+                test: /\.(ts|tsx)$/,
+                exclude: [/node_modules/, /styles/],
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        presets: [
+                            "@babel/preset-env",
+                            ["@babel/preset-react", { 
+                                "runtime": "automatic",
+                                "importSource": "@emotion/react" 
+                            }],
+                            "@babel/preset-typescript"
+                        ]
+                    }
+                },
+                
+            },
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
+        ]
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js", ".jsx"]
+        extensions: [".ts", ".tsx", ".js", ".jsx", ".css"]
     }
 }

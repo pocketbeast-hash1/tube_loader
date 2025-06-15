@@ -3,6 +3,8 @@ import StoreController from "../../controllers/store-controller";
 import SegmentsInfo from "../../classes/SegmentsInfo";
 import { getVideo } from "../../content/get-video";
 
+import "../styles/VideoDownloader";
+
 const VideoDownloader = () => {
     const [segmentsInfo, setSegmentsInfo] = useState<SegmentsInfo>();
     const [baseUrl, setBaseUrl] = useState<string>("");
@@ -27,6 +29,11 @@ const VideoDownloader = () => {
         initApp();
 
     }, []);
+
+    const getProgress = (): number => {
+        if (!segmentsInfo?.segments || segmentsInfo.segments.length <= 0) return 100;
+        return (loadedSegments / segmentsInfo.segments.length) * 100;
+    };
 
     const startDownload = async (onComplete: Function) => {
         console.log(baseUrl, segmentsInfo);
@@ -56,10 +63,12 @@ const VideoDownloader = () => {
     };
     
     return (
-        <div className="download-page">
+        <div id="download-page">
             <h1>Download Page</h1>
-            <p>Segments count: { segmentsInfo?.segments.length || 0 }</p>
-            <p>Progress: {loadedSegments}/{ segmentsInfo?.segments.length || 0 }</p>
+            <div className="progress-bar wrapper">
+                <div className="progress-bar content" style={{width: `${getProgress()}%`}}>
+                </div>
+            </div>
             <button
                 onClick={() => startDownload(onCompleteDownload)}
             >Start Download</button>
