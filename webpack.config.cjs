@@ -20,7 +20,9 @@ module.exports = {
 
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./src/index.html"
+            template: "./src/index.html",
+            inject: "body",
+            scriptLoading: "module"
         }),
         new CopyPlugin({
             patterns: [{
@@ -43,23 +45,12 @@ module.exports = {
                             "importSource": "@emotion/react" 
                         }],
                         "@babel/preset-typescript"
-                    ],
-                    plugins: [
-                        ["@babel/plugin-transform-runtime"],
-                        ["@babel/plugin-proposal-decorators", { "legacy": true }],
-                        ["@babel/plugin-proposal-class-properties", { "loose": true }]
                     ]
                 }
             }
         }]
     },
     resolve: {
-        alias: {
-            'mobx-react-lite': path.resolve(__dirname, 'node_modules/mobx-react-lite'),
-            'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-            'react': path.resolve(__dirname, 'node_modules/react'),
-            'scheduler': path.resolve(__dirname, 'node_modules/scheduler'),
-        },
         extensions: [".ts", ".tsx", ".js", ".jsx"]
     }
 }
