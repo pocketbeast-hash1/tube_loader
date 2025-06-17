@@ -1,5 +1,7 @@
-import ISegmentsInfo from "../interfaces/ISegmentsInfo";
-import SegmentsInfo from "../classes/SegmentsInfo";
+import IDownloadInfo from "../interfaces/IDownloadInfo";
+import DownloadInfo from "../classes/DownloadInfo";
+import IRedirectMessage from "../interfaces/IRedirectMessage";
+import ITabInfo from "../interfaces/ITabInfo";
 
 export default class StoreController {
     
@@ -7,7 +9,7 @@ export default class StoreController {
         const obj: { [key]: string } = await chrome.storage.session.get(key);
         return obj[key];
     }
-    private static async setValueByKey(key: string, value: any): Promise<void> {
+    private static async setValueByKey(key: string, value: string | number): Promise<void> {
         await chrome.storage.session.set({ [key]: value });
     }
     private static async deleteValueByKey(key: string): Promise<void> {
@@ -18,45 +20,45 @@ export default class StoreController {
     }
 
 
-    public static async getURL(): Promise<URL | undefined> {
-        const url: string | undefined = await StoreController.getValueByKey("url");
-        if (url) {
-            return new URL(url);
-        } else {
-            return undefined;
+    public static async getCurrentTabInfo(): Promise<ITabInfo | undefined> {
+        const tabInfoStr: string = await StoreController.getValueByKey("currentTabInfo");
+        if (tabInfoStr && tabInfoStr.length > 0) {
+            const tabInfo = JSON.parse(tabInfoStr);
+            return tabInfo;
         }
     }
-    public static async setURL(newURL: string): Promise<void> {
-        await StoreController.setValueByKey("url", newURL);
+    public static async setCurrentTabInfo(tabInfo: ITabInfo): Promise<void> {
+        await StoreController.setValueByKey("currentTabInfo",  JSON.stringify(tabInfo) );
     }
 
 
-    public static async getBaseURL(): Promise<string | undefined> {
-        return await StoreController.getValueByKey("baseUrl");
+    public static async getDownloadInfo(tabId: number): Promise<IDownloadInfo | undefined> {
+        const info: string | undefined = await StoreController.getValueByKey(`i${tabId}`);
+        if (info && info.length > 0) {
+            const obj: IDownloadInfo = JSON.parse(info);
+            return new DownloadInfo(obj);
+        }
+        
+        return undefined;
     }
-    public static async setBaseURL(baseUrl: string): Promise<void> {
-        await StoreController.setValueByKey("baseUrl", baseUrl);
+    public static async setDownloadInfo(tabId: number, downloadInfo: IDownloadInfo): Promise<void> {
+        await StoreController.setValueByKey(`i${tabId}`, JSON.stringify(downloadInfo));
+    }
+    public static async deleteDownloadInfo(tabId: number): Promise<void> {
+        await StoreController.deleteValueByKey(`i${tabId}`);
     }
 
 
-    public static async getSegmentsInfo(): Promise<ISegmentsInfo | undefined> {
-        const info: string = await StoreController.getValueByKey("segmentsInfo");
-        if (info) {
-            return new SegmentsInfo(info);
-        } else {
-            return undefined;
+    public static async getWindowRedirect(windowId: number): Promise<IRedirectMessage | undefined> {
+        const message: string | undefined = await StoreController.getValueByKey(`r${windowId}`);
+        console.log(windowId, "message window id");
+        console.log(message, "message");
+        if (message && message.length > 0) {
+            return JSON.parse(message);
         }
     }
-    public static async setSegmentsInfo(info: string): Promise<void> {
-        await StoreController.setValueByKey("segmentsInfo", info);
-    }
-
-
-    public static async getWindowRedirect(windowId: number): Promise<string | undefined> {
-        return await StoreController.getValueByKey(`r${windowId}`);
-    }
-    public static async setWindowRedirect(windowId: number, redirectPath: string): Promise<void> {
-        await StoreController.setValueByKey(`r${windowId}`, redirectPath);
+    public static async setWindowRedirect(windowId: number, message: IRedirectMessage): Promise<void> {
+        await StoreController.setValueByKey(`r${windowId}`, JSON.stringify(message));
     }
     public static async deleteWindowRedirect(windowId: number): Promise<void> {
         await StoreController.deleteValueByKey(`r${windowId}`);

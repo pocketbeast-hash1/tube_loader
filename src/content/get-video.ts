@@ -1,8 +1,8 @@
 import RequestsController from "../controllers/requests-controller";
-import SegmentsInfo from "../classes/SegmentsInfo";
-import GetVideoOptions from "../types/get-video-options";
+import IGetVideoOptions from "../interfaces/IGetVideoOptions";
+import ISegmentsInfo from "../interfaces/ISegmentsInfo";
 
-export const getVideo = async (baseUrl: string, segmentsInfo: SegmentsInfo, options: GetVideoOptions | undefined = undefined): Promise<File | undefined> => {
+export const getVideo = async (baseUrl: string, segmentsInfo: ISegmentsInfo, options: IGetVideoOptions | undefined = undefined): Promise<File | undefined> => {
 
     const bins = new Array<BlobPart>;
     for (let segment of segmentsInfo.segments) {

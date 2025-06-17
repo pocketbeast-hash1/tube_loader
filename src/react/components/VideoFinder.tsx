@@ -1,50 +1,52 @@
 import { useEffect, useState } from "react";
 import StoreController from "../../controllers/store-controller";
-import SegmentsInfo from "../../classes/SegmentsInfo";
 import * as serviceInitializer from "../../controllers/service-initializer";
 import EServices from "../../enums/EServices";
-import RuntimeMessage from "../../types/runtime-message";
+import IRedirectMessage from "../../interfaces/IRedirectMessage";
+import IRuntimeMessage from "../../interfaces/IRuntimeMessage";
+import IDownloadInfo from "../../interfaces/IDownloadInfo";
 
 import "../styles/VideoFinder";
+import ITabInfo from "../../interfaces/ITabInfo";
 
 const VideoFinder = () => {
-    const [tabDomain, setTabDomain] = useState<string>("");
-    const [segmentsInfo, setSegmentsInfo] = useState<SegmentsInfo>();
-    const [baseUrl, setBaseUrl] = useState<string>("");
     
-    const updateTabDomain = async () => {
-        const url: URL | undefined = await StoreController.getURL();
-        setTabDomain(url?.hostname || "");
-    };
+    const [tabDomain, setTabDomain] = useState<string>("");
+    const [downloadInfo, setDownloadInfo] = useState<IDownloadInfo>();
 
-    const updateSegmentsInfo = async () => {
-        const segmentsInfo: SegmentsInfo | undefined = await StoreController.getSegmentsInfo();
-        setSegmentsInfo(segmentsInfo);
-    };
+    const updateDownloadInfo = async () => {
+        const tab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
+        if (tab) {
+            const info: IDownloadInfo | undefined = await StoreController.getDownloadInfo(tab.id);
 
-    const updateBaseUrl = async () => {
-        const bUrl: string | undefined = await StoreController.getBaseURL();
-        setBaseUrl(bUrl || "");
+            if (!info) return;
+
+            setDownloadInfo(info);
+        }
     };
 
     useEffect(() => {
     
+        const updateTabDomain = async () => {
+            const tab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
+            if (tab) {
+                setTabDomain( new URL(tab.url).host );
+            }
+        };
+
         const initApp = async () => {
             await updateTabDomain();
-            await updateSegmentsInfo();
-            await updateBaseUrl();
+            await updateDownloadInfo();
         };
 
         initApp();
 
     }, []);
 
-    chrome.runtime.onMessage.addListener(async (message: RuntimeMessage, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener(async (message: IRuntimeMessage, sender, sendResponse) => {
         
-        if (message.id === "baseUrlUpdate") {
-            updateBaseUrl();
-        } else if (message.id === "segmentsInfoUpdate") {
-            updateSegmentsInfo();
+        if (message.id === "updateDownloadInfo") {
+            updateDownloadInfo();
         }
 
     });
@@ -53,9 +55,11 @@ const VideoFinder = () => {
         return serviceInitializer.getService(domain) !== EServices.Undefined;
     };
 
+    // TODO refactor
     const goToFile = async () => {
-        if (baseUrl && segmentsInfo) {
-                        
+        if (downloadInfo) {
+
+            const currentTab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
             const window = await chrome.windows.create({
                 url: "/index.html",
                 type: "popup",
@@ -63,8 +67,13 @@ const VideoFinder = () => {
                 height: 180
             });
 
-            if (window.id) {
-                await StoreController.setWindowRedirect(window.id, "/download-page");
+            if (window.id && currentTab) {
+                const redirectMessage: IRedirectMessage = {
+                    to: "/download-page", 
+                    parentId: currentTab.id
+                };
+                console.log(window.id, "redirect window id");
+                await StoreController.setWindowRedirect(window.id, redirectMessage);
             }
 
         }
@@ -86,7 +95,7 @@ const VideoFinder = () => {
             
             <div
                 id="tab-domain"
-                className={validDomain(tabDomain) ? "valid" : "not-valid"}
+                className={validDomain(tabDomain || "") ? "valid" : "not-valid"}
             >
                 Tab domain: {tabDomain}
             </div>
@@ -96,14 +105,14 @@ const VideoFinder = () => {
                 </div>
             }
             
-            {(validDomain(tabDomain) && baseUrl && segmentsInfo) &&
+            {(validDomain(tabDomain) && downloadInfo) &&
                 <button
                     id="go-to-file"
                     className="btn"
                     onClick={goToFile}
                 >Go to file!</button>
             }
-            {(validDomain(tabDomain) && (!baseUrl || !segmentsInfo)) &&
+            {(validDomain(tabDomain) && !downloadInfo) &&
                 <>
                     <div className="error-block">Video was not found! Try to:</div>
                     <button
@@ -115,6 +124,7 @@ const VideoFinder = () => {
             }
         </div>
     );
+
 }
  
 export default VideoFinder;

@@ -1,11 +1,12 @@
-// TODO refactor
-
 import RequestsController from "../controllers/requests-controller";
 import StoreController from "../controllers/store-controller";
 import EServices from "../enums/EServices";
 import SegmentsInfoRequest from "../classes/abstract/SegmentsInfoRequest";
 import * as serviceInitializer from "../controllers/service-initializer";
-import RuntimeMessage from "../types/runtime-message";
+import DownloadInfo from "../classes/DownloadInfo";
+import ISegmentsInfo from "../interfaces/ISegmentsInfo";
+import IRuntimeMessage from "../interfaces/IRuntimeMessage";
+import ITabInfo from "../interfaces/ITabInfo";
 
 chrome.tabs.onActivated.addListener(async tabInfo => {
     chrome.webRequest.onCompleted.removeListener(listenWebRequests);
@@ -16,9 +17,11 @@ const startListeningActiveTab = () => {
     chrome.tabs.query({ active: true }, async (tabs) => {
 
         const tab: chrome.tabs.Tab = tabs[0];
-        if (!tab) return;
+        if (!tab || !tab.id || !tab.url) return;
 
-        await StoreController.setURL(tab.url || "");
+        const tabInfo: ITabInfo = { id: tab.id, url: tab.url };
+        await StoreController.setCurrentTabInfo(tabInfo);
+
         chrome.webRequest.onCompleted.addListener(
             listenWebRequests, 
             { 
@@ -43,18 +46,21 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
         serviceInitializer.getSegmentsInfoRequest(url, service);
     if (!segmentsInfoRequest) return;
 
-    let msgToClient: RuntimeMessage;
-
-    await StoreController.setBaseURL(segmentsInfoRequest.baseUrl);
-
-    msgToClient = { id: "baseUrlUpdate" };
-    chrome.runtime.sendMessage(msgToClient);
-
-    const segmentsInfo: string | undefined = await RequestsController.getSegmentsInfo(segmentsInfoRequest);
+    const segmentsInfo: ISegmentsInfo | undefined = await RequestsController.getSegmentsInfo(segmentsInfoRequest);
     if (!segmentsInfo) return;
-    await StoreController.setSegmentsInfo(segmentsInfo);
     
-    msgToClient = { id: "segmentsInfoUpdate" };
+    const tab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
+    if (!tab) return;
+
+    const downloadInfo: DownloadInfo = new DownloadInfo({
+        tabUrl: tab.url || "",
+        baseUrl: segmentsInfoRequest.baseUrl,
+        segmentsInfo: segmentsInfo
+    });
+
+    await StoreController.setDownloadInfo(tab.id, downloadInfo);
+
+    const msgToClient: IRuntimeMessage = { id: "updateDownloadInfo" };
     chrome.runtime.sendMessage(msgToClient);
 
 };

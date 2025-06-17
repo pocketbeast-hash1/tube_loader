@@ -2,9 +2,11 @@ import VideoFinder from "./VideoFinder";
 import VideoDownloader from "./VideoDownloader";
 import { useEffect, useState } from "react";
 import StoreController from "../../controllers/store-controller";
+import IRedirectMessage from "../../interfaces/IRedirectMessage";
 
 const App = () => {
     const [path, setPath] = useState<string>("");
+    const [parentId, setParentId] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -13,10 +15,15 @@ const App = () => {
             const window: chrome.windows.Window = await chrome.windows.getCurrent();
             if (!window.id) return;
 
-            const redirect: string | undefined = await StoreController.getWindowRedirect(window.id);
+            const redirect: IRedirectMessage | undefined = await StoreController.getWindowRedirect(window.id);
+            console.log(redirect, "redirect");
             if (!redirect) return;
 
-            setPath(redirect);
+            setPath(redirect.to);
+            setParentId(redirect.parentId);
+
+            console.log(redirect.to, "redirect.to");
+            console.log(redirect.parentId, "redirect.parentId");
         };
 
         const initApp = async () => {
@@ -31,7 +38,7 @@ const App = () => {
     if (!isLoading) {
 
         if (!path || path === "/index.html") return <VideoFinder />;
-        else if (path === "/download-page") return <VideoDownloader />;
+        else if (path === "/download-page") return <VideoDownloader parentId={parentId} />;
 
     }
 }

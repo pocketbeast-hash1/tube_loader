@@ -5,5 +5,5 @@ export default interface ISegment {
     ext: string;
     separator: string;
     
-    toString(): string;
+    toString: () => string;
 }

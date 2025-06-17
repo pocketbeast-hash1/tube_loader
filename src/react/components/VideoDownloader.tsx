@@ -1,29 +1,35 @@
 import { useEffect, useState } from "react";
 import StoreController from "../../controllers/store-controller";
-import SegmentsInfo from "../../classes/SegmentsInfo";
 import { getVideo } from "../../content/get-video";
 
 import "../styles/VideoDownloader";
+import IDownloadInfo from "../../interfaces/IDownloadInfo";
 
-const VideoDownloader = () => {
-    const [segmentsInfo, setSegmentsInfo] = useState<SegmentsInfo>();
-    const [baseUrl, setBaseUrl] = useState<string>("");
+interface IVideoDownloaderProps {
+    parentId: number
+};
+
+const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
+    const [downloadInfo, setDownloadInfo] = useState<IDownloadInfo>();
     const [loadedSegments, setLoadedSegments] = useState<number>(0);
     
     useEffect(() => {
-        const updateSegmentsInfo = async () => {
-            const segmentsInfo: SegmentsInfo | undefined = await StoreController.getSegmentsInfo();
-            setSegmentsInfo(segmentsInfo);
+        const updateDownloadInfo = async () => {
+            const info = await StoreController.getDownloadInfo(parentId);
+            setDownloadInfo(info);
         };
 
-        const updateBaseUrl = async () => {
-            const bUrl: string | undefined = await StoreController.getBaseURL();
-            setBaseUrl(bUrl || "");
+        const removeRedirect = async () => {
+            const window: chrome.windows.Window = await chrome.windows.getCurrent();
+
+            if (window.id) {
+                await StoreController.deleteWindowRedirect(window.id);
+            }
         };
 
-        const initApp = () => {
-            updateSegmentsInfo();
-            updateBaseUrl();
+        const initApp = async () => {
+            await updateDownloadInfo();
+            await removeRedirect();
         };
 
         initApp();
@@ -31,15 +37,17 @@ const VideoDownloader = () => {
     }, []);
 
     const getProgress = (): number => {
-        if (!segmentsInfo?.segments || segmentsInfo.segments.length <= 0) return 100;
-        return (loadedSegments / segmentsInfo.segments.length) * 100;
+        if (downloadInfo && downloadInfo.segmentsInfo.segments.length > 0) {
+            return (loadedSegments / downloadInfo.segmentsInfo.segments.length) * 100;
+        }
+
+        return 100
     };
 
-    const startDownload = async (onComplete: Function) => {
-        console.log(baseUrl, segmentsInfo);
-        if (baseUrl && segmentsInfo) {
+    const startDownload = async (onComplete?: Function | undefined): Promise<void> => {
+        if (downloadInfo) {
             console.log("start getting file!");
-            const video: File | undefined = await getVideo(baseUrl, segmentsInfo, {
+            const video: File | undefined = await getVideo(downloadInfo.baseUrl, downloadInfo.segmentsInfo, {
                 onLoadSegment: (segmentNumber) => { setLoadedSegments(segmentNumber) },
                 onError: () => { alert("error!"); }
             });
@@ -49,19 +57,21 @@ const VideoDownloader = () => {
             const videoUrl = URL.createObjectURL(video);
             await chrome.downloads.download({ url: videoUrl });
 
-            onComplete();
+            if (onComplete)
+                onComplete();
         }
     };
 
     const onCompleteDownload = async () => {
+        await StoreController.deleteDownloadInfo(parentId);
+        // TODO message about download delete to interface
+        
         const window: chrome.windows.Window = await chrome.windows.getCurrent();
-
         if (window.id) {
-            StoreController.deleteWindowRedirect(window.id);
             chrome.windows.remove(window.id);
         }
     };
-    
+
     return (
         <div id="download-page">
             <h1>Download Page</h1>
