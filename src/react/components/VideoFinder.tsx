@@ -72,7 +72,6 @@ const VideoFinder = () => {
                     to: "/download-page", 
                     parentId: currentTab.id
                 };
-                console.log(window.id, "redirect window id");
                 await StoreController.setWindowRedirect(window.id, redirectMessage);
             }
 

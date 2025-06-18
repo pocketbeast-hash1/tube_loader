@@ -1,7 +1,9 @@
+import EServices from "../enums/EServices";
 import SegmentsInfoRequest from "./abstract/SegmentsInfoRequest";
 
 export default class SegmentsInfoRequestRutube extends SegmentsInfoRequest {
     
+    public readonly service: EServices = EServices.Rutube;
     public baseUrl: string;
     public resolution?: string | undefined;
     

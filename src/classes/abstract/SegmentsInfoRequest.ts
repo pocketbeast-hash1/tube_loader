@@ -1,5 +1,8 @@
+import EServices from "../../enums/EServices";
+
 export default abstract class SegmentsInfoRequest {
 
+    public readonly service: EServices = EServices.Undefined;
     public baseUrl: string;
     public hash?: string;
     public expired?: number;

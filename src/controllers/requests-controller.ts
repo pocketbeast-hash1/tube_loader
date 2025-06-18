@@ -3,6 +3,9 @@ import SegmentsInfoRequest from "../classes/abstract/SegmentsInfoRequest";
 import Segment from "../classes/Segment";
 import ISegmentsInfo from "../interfaces/ISegmentsInfo";
 import SegmentsInfo from "../classes/SegmentsInfo";
+import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
+import IVideoInfo from "../interfaces/IVideoInfo";
+import * as serviceInitializer from "../controllers/service-initializer";
 
 export default class RequestsController {
 
@@ -12,7 +15,8 @@ export default class RequestsController {
             return response.data;
             
         } catch (error) {
-            if (error instanceof AxiosError) console.error(error.message);
+            // TODO implement error handling
+            if (error instanceof AxiosError) console.error(error);
         }
     }
 
@@ -30,6 +34,16 @@ export default class RequestsController {
         );
         
         if (response) return response;
+    }
+
+    public static async getVideoInfo(videoInfoRequest: VideoInfoRequest): Promise<IVideoInfo | undefined> {
+        const response: string | undefined = await RequestsController.get(
+            videoInfoRequest.toString(),
+            { responseType: "json" }
+        );
+
+        if (response)
+            return serviceInitializer.getVideoInfoFromObject(response, videoInfoRequest.service);
     }
 
 }

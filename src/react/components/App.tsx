@@ -16,14 +16,10 @@ const App = () => {
             if (!window.id) return;
 
             const redirect: IRedirectMessage | undefined = await StoreController.getWindowRedirect(window.id);
-            console.log(redirect, "redirect");
             if (!redirect) return;
 
             setPath(redirect.to);
             setParentId(redirect.parentId);
-
-            console.log(redirect.to, "redirect.to");
-            console.log(redirect.parentId, "redirect.parentId");
         };
 
         const initApp = async () => {

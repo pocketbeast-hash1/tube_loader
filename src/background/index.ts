@@ -7,6 +7,8 @@ import DownloadInfo from "../classes/DownloadInfo";
 import ISegmentsInfo from "../interfaces/ISegmentsInfo";
 import IRuntimeMessage from "../interfaces/IRuntimeMessage";
 import ITabInfo from "../interfaces/ITabInfo";
+import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
+import IVideoInfo from "../interfaces/IVideoInfo";
 
 chrome.tabs.onActivated.addListener(async tabInfo => {
     chrome.webRequest.onCompleted.removeListener(listenWebRequests);
@@ -52,10 +54,21 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
     const tab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
     if (!tab) return;
 
+    const videoId: string | undefined = serviceInitializer.getVideoIdFromLink(tab.url, service);
+    const videoInfoRequest: VideoInfoRequest | undefined = 
+        serviceInitializer.getVideoInfoRequest(videoId || "", service);    
+    
+    let videoInfo: IVideoInfo | undefined = undefined;
+    if (videoInfoRequest) {
+        videoInfo = await RequestsController.getVideoInfo(videoInfoRequest);
+    }
+
     const downloadInfo: DownloadInfo = new DownloadInfo({
+        service: service,
         tabUrl: tab.url || "",
         baseUrl: segmentsInfoRequest.baseUrl,
-        segmentsInfo: segmentsInfo
+        segmentsInfo: segmentsInfo,
+        videoInfo: videoInfo
     });
 
     await StoreController.setDownloadInfo(tab.id, downloadInfo);

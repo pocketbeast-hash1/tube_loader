@@ -51,8 +51,6 @@ export default class StoreController {
 
     public static async getWindowRedirect(windowId: number): Promise<IRedirectMessage | undefined> {
         const message: string | undefined = await StoreController.getValueByKey(`r${windowId}`);
-        console.log(windowId, "message window id");
-        console.log(message, "message");
         if (message && message.length > 0) {
             return JSON.parse(message);
         }

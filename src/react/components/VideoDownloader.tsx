@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import StoreController from "../../controllers/store-controller";
 import { getVideo } from "../../content/get-video";
+import IDownloadInfo from "../../interfaces/IDownloadInfo";
+import VideoData from "./VideoData";
 
 import "../styles/VideoDownloader";
-import IDownloadInfo from "../../interfaces/IDownloadInfo";
 
 interface IVideoDownloaderProps {
     parentId: number
@@ -75,6 +76,14 @@ const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
     return (
         <div id="download-page">
             <h1>Download Page</h1>
+
+            <VideoData 
+                title={downloadInfo?.videoInfo?.title || ""}
+                author_name={downloadInfo?.videoInfo?.author_name || ""}
+                duration={downloadInfo?.videoInfo?.duration || 0}
+                thumbnail_url={downloadInfo?.videoInfo?.thumbnail_url}
+            />
+
             <div className="progress-bar wrapper">
                 <div className="progress-bar content" style={{width: `${getProgress()}%`}}>
                 </div>
