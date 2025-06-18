@@ -63,8 +63,8 @@ const VideoFinder = () => {
             const window = await chrome.windows.create({
                 url: "/index.html",
                 type: "popup",
-                width: 300,
-                height: 180
+                width: 400,
+                height: 600
             });
 
             if (window.id && currentTab) {

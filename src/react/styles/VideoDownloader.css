@@ -1,3 +1,10 @@
+html {
+    height: 100%;
+    margin: 0 auto;
+    text-align: center;
+    align-content: center;
+}
+
 #download-page {
     display: flex;
     flex-direction: column;

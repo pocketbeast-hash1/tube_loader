@@ -75,7 +75,7 @@ const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
 
     return (
         <div id="download-page">
-            <h1>Download Page</h1>
+            <h1>Download Page. Don't close it!</h1>
 
             <VideoData 
                 title={downloadInfo?.videoInfo?.title || ""}
