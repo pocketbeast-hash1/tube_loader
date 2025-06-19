@@ -1,16 +1,15 @@
 import EServices from "../enums/EServices";
 import IDownloadInfo from "../interfaces/IDownloadInfo";
-import ISegmentsInfo from "../interfaces/ISegmentsInfo";
 import IVideoInfo from "../interfaces/IVideoInfo";
-import SegmentsInfo from "./SegmentsInfo";
+import { Manifest } from "m3u8-parser";
 import * as serviceInitializer from "../controllers/service-initializer";
 
 export default class DownloadInfo implements IDownloadInfo {
     service: EServices = EServices.Undefined;
     tabUrl: string = "";
     baseUrl: string = "";
-    segmentsInfo: ISegmentsInfo = new SegmentsInfo({});
-    videoInfo?: IVideoInfo | undefined = undefined;
+    manifest: Manifest | undefined;
+    videoInfo?: IVideoInfo | undefined;
     
     // TODO refactor. Don't proud for this
     constructor(obj: IDownloadInfo) {
@@ -24,8 +23,8 @@ export default class DownloadInfo implements IDownloadInfo {
         if ("baseUrl" in obj && typeof obj.baseUrl === "string")
             this.baseUrl = obj.baseUrl;
 
-        if ("segmentsInfo" in obj && obj.segmentsInfo instanceof Object)
-            this.segmentsInfo = new SegmentsInfo(obj.segmentsInfo);
+        if ("manifest" in obj && obj.videoInfo instanceof Object)
+            this.manifest = <Manifest> obj.manifest;
 
         if ("videoInfo" in obj && obj.videoInfo instanceof Object)
             this.videoInfo = serviceInitializer.getVideoInfoFromObject(

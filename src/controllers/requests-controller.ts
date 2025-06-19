@@ -1,11 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import SegmentsInfoRequest from "../classes/abstract/SegmentsInfoRequest";
-import Segment from "../classes/Segment";
-import ISegmentsInfo from "../interfaces/ISegmentsInfo";
-import SegmentsInfo from "../classes/SegmentsInfo";
+import ManifestRequest from "../classes/abstract/ManifestRequest";
 import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
 import IVideoInfo from "../interfaces/IVideoInfo";
+import { Manifest, Segment } from "m3u8-parser";
 import * as serviceInitializer from "../controllers/service-initializer";
+import * as m3u8Controller from "../controllers/m3u8-controller";
 
 export default class RequestsController {
 
@@ -20,16 +19,17 @@ export default class RequestsController {
         }
     }
 
-    public static async getSegmentsInfo(segmentsInfoRequest: SegmentsInfoRequest): Promise<ISegmentsInfo | undefined> {
-        const response: string = await RequestsController.get(segmentsInfoRequest.toString());
+    public static async getManifest(manifestRequest: ManifestRequest): Promise<Manifest | undefined> {
+        const response: string | undefined = await RequestsController.get(manifestRequest.manifestUrl);
         if (response) {
-            return new SegmentsInfo(response);
+            return m3u8Controller.getManifest(response);
         };
     }
 
     public static async getSegment(baseUrl: string, segment: Segment): Promise<BlobPart | undefined> {
+        console.log(segment);
         const response = await RequestsController.get(
-            baseUrl + "/" + segment.toString(),
+            baseUrl + "/" + segment.uri,
             { responseType: "blob" }
         );
         

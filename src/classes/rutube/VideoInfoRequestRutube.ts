@@ -1,5 +1,5 @@
-import EServices from "../enums/EServices";
-import VideoInfoRequest from "./abstract/VideoInfoRequest";
+import EServices from "../../enums/EServices";
+import VideoInfoRequest from "../abstract/VideoInfoRequest";
 
 export default class VideoInfoRequestRutube extends VideoInfoRequest {
 

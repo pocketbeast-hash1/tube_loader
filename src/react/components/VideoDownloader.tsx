@@ -38,17 +38,16 @@ const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
     }, []);
 
     const getProgress = (): number => {
-        if (downloadInfo && downloadInfo.segmentsInfo.segments.length > 0) {
-            return (loadedSegments / downloadInfo.segmentsInfo.segments.length) * 100;
+        if (downloadInfo && downloadInfo.manifest && downloadInfo.manifest.segments.length > 0) {
+            return (loadedSegments / downloadInfo.manifest.segments.length) * 100;
         }
 
         return 100
     };
 
     const startDownload = async (onComplete?: Function | undefined): Promise<void> => {
-        if (downloadInfo) {
-            console.log("start getting file!");
-            const video: File | undefined = await getVideo(downloadInfo.baseUrl, downloadInfo.segmentsInfo, {
+        if (downloadInfo && downloadInfo.manifest) {
+            const video: File | undefined = await getVideo(downloadInfo.baseUrl, downloadInfo.manifest, {
                 onLoadSegment: (segmentNumber) => { setLoadedSegments(segmentNumber) },
                 onError: () => { alert("error!"); }
             });

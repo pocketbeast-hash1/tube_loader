@@ -1,6 +1,6 @@
 {
   "name": "Tube Loader",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Download videos from Rutube, YouTube, etc.",
   "main": "index.js",
   "type": "module",
@@ -50,7 +50,9 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@types/m3u8-parser": "^7.2.2",
     "axios": "^1.9.0",
+    "m3u8-parser": "^7.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.6.2"

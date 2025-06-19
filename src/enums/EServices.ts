@@ -1,5 +1,6 @@
 enum EServices {
     Rutube,
+    PHub,
     Undefined
 };
 

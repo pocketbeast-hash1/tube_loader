@@ -1,14 +1,14 @@
 import RequestsController from "../controllers/requests-controller";
 import StoreController from "../controllers/store-controller";
 import EServices from "../enums/EServices";
-import SegmentsInfoRequest from "../classes/abstract/SegmentsInfoRequest";
+import ManifestRequest from "../classes/abstract/ManifestRequest";
 import * as serviceInitializer from "../controllers/service-initializer";
 import DownloadInfo from "../classes/DownloadInfo";
-import ISegmentsInfo from "../interfaces/ISegmentsInfo";
 import IRuntimeMessage from "../interfaces/IRuntimeMessage";
 import ITabInfo from "../interfaces/ITabInfo";
 import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
 import IVideoInfo from "../interfaces/IVideoInfo";
+import { Manifest } from "m3u8-parser";
 
 const handleOnActivated = (tabInfo: chrome.tabs.TabActiveInfo) => {
     startListeningActiveTab();
@@ -55,12 +55,12 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
     if (service === EServices.Undefined) return;
     if (!serviceInitializer.isSegmentsInfoRequest(url)) return;
     
-    const segmentsInfoRequest: SegmentsInfoRequest | undefined = 
+    const segmentsInfoRequest: ManifestRequest | undefined = 
         serviceInitializer.getSegmentsInfoRequest(url, service);
     if (!segmentsInfoRequest) return;
 
-    const segmentsInfo: ISegmentsInfo | undefined = await RequestsController.getSegmentsInfo(segmentsInfoRequest);
-    if (!segmentsInfo) return;
+    const manifest: Manifest | undefined = await RequestsController.getManifest(segmentsInfoRequest);
+    if (!manifest) return;
     
     const tab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
     if (!tab) return;
@@ -78,7 +78,7 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
         service: service,
         tabUrl: tab.url || "",
         baseUrl: segmentsInfoRequest.baseUrl,
-        segmentsInfo: segmentsInfo,
+        manifest: manifest,
         videoInfo: videoInfo
     });
 

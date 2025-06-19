@@ -1,4 +1,4 @@
-import IVideoInfo from "../interfaces/IVideoInfo";
+import IVideoInfo from "../../interfaces/IVideoInfo";
 
 export default class VideoInfoRutube implements IVideoInfo {
     
