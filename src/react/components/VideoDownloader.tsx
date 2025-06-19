@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import StoreController from "../../controllers/store-controller";
-import { getVideo } from "../../content/get-video";
+import { getVideo } from "../../controllers/get-video";
 import IDownloadInfo from "../../interfaces/IDownloadInfo";
 import VideoData from "./VideoData";
 
