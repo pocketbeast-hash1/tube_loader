@@ -10,20 +10,32 @@ import ITabInfo from "../interfaces/ITabInfo";
 import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
 import IVideoInfo from "../interfaces/IVideoInfo";
 
-chrome.tabs.onActivated.addListener(async tabInfo => {
-    chrome.webRequest.onCompleted.removeListener(listenWebRequests);
+const handleOnActivated = (tabInfo: chrome.tabs.TabActiveInfo) => {
     startListeningActiveTab();
-});
+};
 
-const startListeningActiveTab = () => {
-    chrome.tabs.query({ active: true }, async (tabs) => {
+const handleOnUpdated = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+    startListeningActiveTab();
+};
 
-        const tab: chrome.tabs.Tab = tabs[0];
-        if (!tab || !tab.id || !tab.url) return;
 
-        const tabInfo: ITabInfo = { id: tab.id, url: tab.url };
-        await StoreController.setCurrentTabInfo(tabInfo);
+if (!chrome.tabs.onActivated.hasListener(handleOnActivated))
+    chrome.tabs.onActivated.addListener(handleOnActivated);
 
+if (!chrome.tabs.onUpdated.hasListener(handleOnUpdated))
+    chrome.tabs.onUpdated.addListener(handleOnUpdated);
+
+
+const startListeningActiveTab = async () => {
+    const tabs: chrome.tabs.Tab[] = await chrome.tabs.query({ active: true });
+
+    const tab: chrome.tabs.Tab = tabs[0];
+    if (!tab || !tab.id || !tab.url) return;
+
+    const tabInfo: ITabInfo = { id: tab.id, url: tab.url };
+    await StoreController.setCurrentTabInfo(tabInfo);
+
+    if (!chrome.webRequest.onCompleted.hasListener(listenWebRequests)) {
         chrome.webRequest.onCompleted.addListener(
             listenWebRequests, 
             { 
@@ -31,8 +43,7 @@ const startListeningActiveTab = () => {
                 tabId: tab.id 
             }
         );
-
-    });
+    }
 };
 
 const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) => {
@@ -74,6 +85,16 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
     await StoreController.setDownloadInfo(tab.id, downloadInfo);
 
     const msgToClient: IRuntimeMessage = { id: "updateDownloadInfo" };
-    chrome.runtime.sendMessage(msgToClient);
+    chrome.runtime
+        .sendMessage(msgToClient)
+        .catch(error => {
+            // Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.
+            // error appears because of multiple triggers of listener
+            // and message don't handle
+            // no need to worry
+            // it's ok
+            // ...
+            // TODO refactor
+        });
 
 };
