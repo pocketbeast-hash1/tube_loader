@@ -15,9 +15,9 @@ const handleOnActivated = (tabInfo: chrome.tabs.TabActiveInfo) => {
 };
 
 const handleOnUpdated = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+    StoreController.deleteDownloadInfo(tabId);
     startListeningActiveTab();
 };
-
 
 if (!chrome.tabs.onActivated.hasListener(handleOnActivated))
     chrome.tabs.onActivated.addListener(handleOnActivated);
