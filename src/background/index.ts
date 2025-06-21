@@ -60,8 +60,8 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
     if (!segmentsInfoRequest) return;
 
     const manifest: Manifest | undefined = await RequestsController.getManifest(segmentsInfoRequest);
-    if (!manifest) return;
-    
+    if (!manifest || manifest.segments.length <= 0) return;
+
     const tab: ITabInfo | undefined = await StoreController.getCurrentTabInfo();
     if (!tab) return;
 

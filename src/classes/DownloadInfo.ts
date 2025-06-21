@@ -23,8 +23,7 @@ export default class DownloadInfo implements IDownloadInfo {
         if ("baseUrl" in obj && typeof obj.baseUrl === "string")
             this.baseUrl = obj.baseUrl;
 
-        if ("manifest" in obj && obj.videoInfo instanceof Object)
-            this.manifest = <Manifest> obj.manifest;
+        this.manifest = <Manifest> obj.manifest;
 
         if ("videoInfo" in obj && obj.videoInfo instanceof Object)
             this.videoInfo = serviceInitializer.getVideoInfoFromObject(

@@ -8,7 +8,11 @@ export default abstract class ManifestRequest {
 
     constructor(url: URL) {
         this.manifestUrl = url.href;
-        this.baseUrl = url.protocol + "//" + url.hostname + url.pathname.replace(/\.m3u8/, "");
+
+        const pathParts = url.pathname.split("/");
+        pathParts.pop();
+
+        this.baseUrl = url.protocol + "//" + url.hostname + pathParts.join("/");
     }
 
     public static isValidDomain(domain: string): boolean {
@@ -18,7 +22,7 @@ export default abstract class ManifestRequest {
     public static isSegmentsInfoRequest(url: URL): boolean {
         return (
             this.isValidDomain(url.hostname) &&
-            url.pathname.match(/\.m3u8?/) !== null
+            url.pathname.match(/\.m3u8/) !== null
         );
     }
 

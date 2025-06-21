@@ -27,7 +27,6 @@ export default class RequestsController {
     }
 
     public static async getSegment(baseUrl: string, segment: Segment): Promise<BlobPart | undefined> {
-        console.log(segment);
         const response = await RequestsController.get(
             baseUrl + "/" + segment.uri,
             { responseType: "blob" }

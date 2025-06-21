@@ -104,16 +104,19 @@ const VideoFinder = () => {
                 </div>
             }
             
-            {(validDomain(tabDomain) && downloadInfo) &&
+            {(validDomain(tabDomain) && downloadInfo && downloadInfo.manifest) &&
                 <button
                     id="go-to-file"
                     className="btn"
                     onClick={goToFile}
                 >Go to file!</button>
             }
-            {(validDomain(tabDomain) && !downloadInfo) &&
+            {(validDomain(tabDomain) && (!downloadInfo || !downloadInfo.manifest)) &&
                 <>
-                    <div className="error-block">Video was not found! Try to:</div>
+                    <div className="error-block">
+                        {!downloadInfo && "Video was not found! Try to:"}
+                        {downloadInfo && !downloadInfo.manifest && "Manifest was not found! Try to:"}
+                    </div>
                     <button
                         id="reload"
                         className="btn"
