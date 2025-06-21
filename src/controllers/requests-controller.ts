@@ -33,7 +33,7 @@ export default class RequestsController {
     public static async getSegment(baseUrl: string, segment: Segment): Promise<BlobPart | undefined> {
         const response = await RequestsController.get(
             baseUrl + "/" + segment.uri,
-            { responseType: "blob" }
+            { responseType: "blob", timeout: 10000 }
         );
         
         if (response) return response;

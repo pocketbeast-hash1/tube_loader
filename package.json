@@ -1,6 +1,6 @@
 {
   "name": "Tube Loader",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Download videos from Rutube, YouTube, etc.",
   "main": "index.js",
   "type": "module",
