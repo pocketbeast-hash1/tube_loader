@@ -54,8 +54,12 @@ const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
 
             if (!video) return;
 
-            const videoUrl = URL.createObjectURL(video);
-            await chrome.downloads.download({ url: videoUrl });
+            const videoUrl: string = URL.createObjectURL(video);
+
+            const videoName: string = downloadInfo.videoInfo?.title || "video";
+            const filename: string = videoName + ".mp4";
+
+            await chrome.downloads.download({ url: videoUrl, filename });
 
             if (onComplete)
                 onComplete();

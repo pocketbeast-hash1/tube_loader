@@ -23,6 +23,6 @@ export const getVideo = async (baseUrl: string, manifest: Manifest, options: IGe
         return;
     }
 
-    return new File(bins, "test", { type: "video/mp4" });
+    return new File(bins, "newFile", { type: "video/mp4" });
     
 };
