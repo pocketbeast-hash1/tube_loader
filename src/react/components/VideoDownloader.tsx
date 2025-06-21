@@ -3,6 +3,7 @@ import StoreController from "../../controllers/store-controller";
 import { getVideo } from "../../controllers/get-video";
 import IDownloadInfo from "../../interfaces/IDownloadInfo";
 import VideoData from "./VideoData";
+import { getValidName } from "../../controllers/naming-controller";
 
 import "../styles/VideoDownloader";
 
@@ -56,7 +57,11 @@ const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
 
             const videoUrl: string = URL.createObjectURL(video);
 
-            const videoName: string = downloadInfo.videoInfo?.title || "video";
+            let videoName: string = "video";
+            if (downloadInfo.videoInfo?.title) {
+                videoName = getValidName(downloadInfo.videoInfo?.title);
+            }
+
             const filename: string = videoName + ".mp4";
 
             await chrome.downloads.download({ url: videoUrl, filename });
