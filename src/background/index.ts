@@ -11,11 +11,18 @@ import IVideoInfo from "../interfaces/IVideoInfo";
 import { Manifest } from "m3u8-parser";
 
 const handleOnActivated = (tabInfo: chrome.tabs.TabActiveInfo) => {
+    if (chrome.webRequest.onCompleted.hasListener(listenWebRequests))
+        chrome.webRequest.onCompleted.removeListener(listenWebRequests);
+
     startListeningActiveTab();
 };
 
 const handleOnUpdated = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
     StoreController.deleteDownloadInfo(tabId);
+
+    if (chrome.webRequest.onCompleted.hasListener(listenWebRequests))
+        chrome.webRequest.onCompleted.removeListener(listenWebRequests);
+
     startListeningActiveTab();
 };
 

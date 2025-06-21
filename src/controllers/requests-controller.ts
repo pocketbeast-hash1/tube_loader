@@ -10,7 +10,11 @@ export default class RequestsController {
 
     private static async get(url: string, config: AxiosRequestConfig | undefined = undefined): Promise<any | undefined> {
         try {
-            const response: AxiosResponse = await axios.get(url, config);
+            let timeout: number | undefined = config?.timeout;
+            if (!timeout)
+                timeout = 3000
+
+            const response: AxiosResponse = await axios.get(url, { ...config, timeout });
             return response.data;
             
         } catch (error) {
