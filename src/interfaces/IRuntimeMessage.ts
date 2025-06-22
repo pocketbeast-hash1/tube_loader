@@ -1,3 +1,4 @@
 export default interface IRuntimeMessage {
-    id: string
+    id: string,
+    content?: any
 };

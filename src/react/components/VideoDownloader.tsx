@@ -6,6 +6,7 @@ import VideoData from "./VideoData";
 import { getValidName } from "../../controllers/naming-controller";
 
 import "../styles/VideoDownloader";
+import IRuntimeMessage from "../../interfaces/IRuntimeMessage";
 
 interface IVideoDownloaderProps {
     parentId: number
@@ -73,7 +74,9 @@ const VideoDownloader = ({ parentId }: IVideoDownloaderProps) => {
 
     const onCompleteDownload = async () => {
         await StoreController.deleteDownloadInfo(parentId);
-        // TODO message about download delete to interface
+        
+        const msg: IRuntimeMessage = { id: "updateDownloadInfo" };
+        chrome.runtime.sendMessage(msg);
         
         const window: chrome.windows.Window = await chrome.windows.getCurrent();
         if (window.id) {
