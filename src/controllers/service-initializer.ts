@@ -3,7 +3,7 @@ import ManifestRequest from "../classes/abstract/ManifestRequest";
 import ManifestRequestRutube from "../classes/rutube/ManifestRequestRutube";
 import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
 import VideoInfoRequestRutube from "../classes/rutube/VideoInfoRequestRutube";
-import IVideoInfo from "../interfaces/IVideoInfo";
+import VideoInfo from "../classes/abstract/VideoInfo";
 import VideoInfoRutube from "../classes/rutube/VideoInfoRutube";
 import ManifestRequestPHub from "../classes/phub/ManifestRequestPHub";
 import VideoInfoRequestPHub from "../classes/phub/VideoInfoRequestPHub";
@@ -52,7 +52,7 @@ export const getVideoInfoRequest = (videoId: string, service: EServices): VideoI
         return new VideoInfoRequestPHub(videoId);
     }
 };
-export const getVideoInfoFromObject = (obj: Object, service: EServices): IVideoInfo | undefined => {
+export const getVideoInfoFromObject = (obj: Object, service: EServices): VideoInfo | undefined => {
     if (service === EServices.Rutube) {
         return VideoInfoRutube.fromObject(obj);
     } else if (service === EServices.PHub) {

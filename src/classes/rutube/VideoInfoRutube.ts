@@ -1,24 +1,12 @@
-import IVideoInfo from "../../interfaces/IVideoInfo";
+import VideoInfo from "../abstract/VideoInfo";
 
-export default class VideoInfoRutube implements IVideoInfo {
+export default class VideoInfoRutube extends VideoInfo {
     
-    title: string;
-    author_name: string;
-    duration: number;
-    thumbnail_url?: string | undefined;
+    public static fromObject(obj: Object): VideoInfo {
 
-    constructor(title: string, author_name: string, duration: number, thumbnail_url: string | undefined = undefined) {
+        if (VideoInfo.validObject(obj))
+            return new VideoInfoRutube(obj.title, obj.author_name, obj.duration, obj.thumbnail_url);
         
-        this.title = title;
-        this.author_name = author_name;
-        this.duration = duration;
-        this.thumbnail_url = thumbnail_url;
-
-    }
-
-    // TODO refactor
-    public static fromObject(obj: Object): IVideoInfo {
-
         let title: string = "";
         let author_name: string = "";
         let duration: number = 0;

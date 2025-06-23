@@ -7,7 +7,7 @@ import DownloadInfo from "../classes/DownloadInfo";
 import IRuntimeMessage from "../interfaces/IRuntimeMessage";
 import ITabInfo from "../interfaces/ITabInfo";
 import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
-import IVideoInfo from "../interfaces/IVideoInfo";
+import VideoInfo from "../classes/abstract/VideoInfo";
 import { Manifest } from "m3u8-parser";
 
 const handleOnActivated = (tabInfo: chrome.tabs.TabActiveInfo) => {
@@ -76,7 +76,7 @@ const listenWebRequests = async (details: chrome.webRequest.OnCompletedDetails) 
     const videoInfoRequest: VideoInfoRequest | undefined = 
         serviceInitializer.getVideoInfoRequest(videoId || "", service);    
     
-    let videoInfo: IVideoInfo | undefined = undefined;
+    let videoInfo: VideoInfo | undefined = undefined;
     if (videoInfoRequest) {
         videoInfo = await RequestsController.getVideoInfo(videoInfoRequest);
     }

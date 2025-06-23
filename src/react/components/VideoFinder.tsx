@@ -55,7 +55,6 @@ const VideoFinder = () => {
         return serviceInitializer.getService(domain) !== EServices.Undefined;
     };
 
-    // TODO refactor
     const goToFile = async () => {
         if (downloadInfo) {
 

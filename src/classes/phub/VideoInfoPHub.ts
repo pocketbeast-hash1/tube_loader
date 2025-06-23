@@ -1,23 +1,8 @@
-import IVideoInfo from "../../interfaces/IVideoInfo";
+import VideoInfo from "../abstract/VideoInfo";
 
-export default class VideoInfoPHub implements IVideoInfo {
+export default class VideoInfoPHub extends VideoInfo {
     
-    title: string;
-    author_name: string;
-    duration: number;
-    thumbnail_url?: string | undefined;
-
-    constructor(title: string, author_name: string, duration: number, thumbnail_url: string | undefined = undefined) {
-        
-        this.title = title;
-        this.author_name = author_name;
-        this.duration = duration;
-        this.thumbnail_url = thumbnail_url;
-
-    }
-
-    // TODO refactor
-    public static fromObject(obj: Object): IVideoInfo {
+    public static fromObject(obj: Object): VideoInfo {
 
         let video: Object = {};
         if ("video" in obj && obj.video instanceof Object) {
@@ -25,6 +10,9 @@ export default class VideoInfoPHub implements IVideoInfo {
         } else {
             video = obj;
         }
+
+        if (VideoInfo.validObject(video))
+            return new VideoInfoPHub(video.title, video.author_name, video.duration, video.thumbnail_url);
 
         let title: string = "";
         let author_name: string = "";

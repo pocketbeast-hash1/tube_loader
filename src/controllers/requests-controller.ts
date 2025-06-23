@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import ManifestRequest from "../classes/abstract/ManifestRequest";
 import VideoInfoRequest from "../classes/abstract/VideoInfoRequest";
-import IVideoInfo from "../interfaces/IVideoInfo";
+import VideoInfo from "../classes/abstract/VideoInfo";
 import { Manifest, Segment } from "m3u8-parser";
 import * as serviceInitializer from "../controllers/service-initializer";
 import * as m3u8Controller from "../controllers/m3u8-controller";
@@ -39,7 +39,7 @@ export default class RequestsController {
         if (response) return response;
     }
 
-    public static async getVideoInfo(videoInfoRequest: VideoInfoRequest): Promise<IVideoInfo | undefined> {
+    public static async getVideoInfo(videoInfoRequest: VideoInfoRequest): Promise<VideoInfo | undefined> {
         const response: string | undefined = await RequestsController.get(
             videoInfoRequest.toString(),
             { responseType: "json" }

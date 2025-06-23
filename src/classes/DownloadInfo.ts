@@ -1,6 +1,6 @@
 import EServices from "../enums/EServices";
 import IDownloadInfo from "../interfaces/IDownloadInfo";
-import IVideoInfo from "../interfaces/IVideoInfo";
+import VideoInfo from "./abstract/VideoInfo";
 import { Manifest } from "m3u8-parser";
 import * as serviceInitializer from "../controllers/service-initializer";
 
@@ -9,23 +9,18 @@ export default class DownloadInfo implements IDownloadInfo {
     tabUrl: string = "";
     baseUrl: string = "";
     manifest: Manifest | undefined;
-    videoInfo?: IVideoInfo | undefined;
+    videoInfo?: VideoInfo | undefined;
     
-    // TODO refactor. Don't proud for this
     constructor(obj: IDownloadInfo) {
 
-        if ("service" in obj)
-            this.service = obj.service;
+        this.service = obj.service;
+        this.tabUrl = obj.tabUrl;
+        this.baseUrl = obj.baseUrl;
 
-        if ("tabUrl" in obj && typeof obj.tabUrl === "string")
-            this.tabUrl = obj.tabUrl;
+        if (obj.manifest)
+            this.manifest = <Manifest> obj.manifest;
 
-        if ("baseUrl" in obj && typeof obj.baseUrl === "string")
-            this.baseUrl = obj.baseUrl;
-
-        this.manifest = <Manifest> obj.manifest;
-
-        if ("videoInfo" in obj && obj.videoInfo instanceof Object)
+        if (obj.videoInfo)
             this.videoInfo = serviceInitializer.getVideoInfoFromObject(
                 obj.videoInfo,
                 this.service
