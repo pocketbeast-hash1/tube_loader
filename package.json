@@ -1,7 +1,7 @@
 {
   "name": "Tube Loader",
-  "version": "0.5.5",
-  "description": "Download videos from Rutube, YouTube, etc.",
+  "version": "1.0.0",
+  "description": "Download videos from Rutube",
   "main": "index.js",
   "type": "module",
   "license": "AGPL-version-3.0",
