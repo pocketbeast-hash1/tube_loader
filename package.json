@@ -1,5 +1,5 @@
 {
-  "name": "Tube Loader",
+  "name": "tube_loader",
   "version": "1.0.0",
   "description": "Download videos from Rutube",
   "main": "index.js",
